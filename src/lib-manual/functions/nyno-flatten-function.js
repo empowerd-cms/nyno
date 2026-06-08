@@ -10,6 +10,7 @@ export function flattenWorkflow(obj) {
     steps: {},          // stepId -> step name string
     args: {},           // stepId -> args array
     tools: {},           // stepId -> tools array (from agent-tools-config)
+    deno: {},            // stepId -> Deno runner config
     step_context: {},   // stepId -> context object
     context: obj.context || {}
   };
@@ -38,6 +39,11 @@ export function flattenWorkflow(obj) {
     // Tools (if defined)
     if (step.tools !== undefined) {
       result.tools[id] = step.tools;
+    }
+
+    // Deno runner config (if defined)
+    if (step.deno !== undefined) {
+      result.deno[id] = step.deno;
     }
 
     // Step context (if defined)

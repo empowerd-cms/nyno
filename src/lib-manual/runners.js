@@ -44,7 +44,7 @@ const ports = load_nyno_ports(portsFile);
 //console.log('[MAIN RUNNER PORTS]',ports);
 
 
-const host = ports['host'] ?? 'localhost';
+const host = ports['HOST'] ?? ports['host'] ?? 'localhost';
 
 // List of directories to scan for extensions
 const extensionDirs = [
@@ -103,6 +103,13 @@ const RUNNERS = {
     cmd: "node",
     file: path.resolve(__dirname, "../../dist-ts/nyno/src/lib-manual/runners/runner.js"),
     checkFunction: makeCheckFunction(['command.js','command.ts','command.wasm'])
+  },
+  deno: {
+    host,
+    port: ports["DN"] ?? 9073,
+    cmd: "node",
+    file: path.resolve(__dirname, "../../dist-ts/nyno/src/lib-manual/runners/runner_deno.js"),
+    checkFunction: makeCheckFunction(['command.deno.ts'])
   },
   py: {
     host,
@@ -240,7 +247,7 @@ export function generateUUIDv7() {
 }
 
 // --- Run function on a single runner ---
-export function runFunctionSingle(language, functionName, args = [],context={}) {
+export function runFunctionSingle(language, functionName, args = [],context={},options={}) {
 
 console.log('runFunctionSingle',language, functionName, args,context);
 
@@ -259,7 +266,7 @@ context['__n_id'] = __n_id;
       resolve(msg);
     };
 
-    client.write('r'+JSON.stringify({functionName,args,context}) + '\n');
+    client.write('r'+JSON.stringify({functionName,args,context,options}) + '\n');
   });
 }
 

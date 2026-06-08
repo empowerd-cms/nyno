@@ -18,12 +18,17 @@ export function loadStepCommandLangs(...baseDirs) {
       // Read files in each directory
       const files = fs.readdirSync(fullDir);
 
-      // Look for a file named command.<ext>
-      const commandFile = files.find(f => f.startsWith('command.'));
+      // Prefer explicit Deno TypeScript command files.
+      const commandFile = files.includes('command.deno.ts')
+        ? 'command.deno.ts'
+        : files.find(f => f.startsWith('command.'));
       if (!commandFile) continue;
 
       // Extract extension (js, py, php, rb…)
       let ext = path.extname(commandFile).replace('.', '');
+
+      // Deno support: explicit command.deno.ts maps to deno.
+      if (commandFile === 'command.deno.ts') ext = 'deno';
 
       // Typescript support: treat TS as JS
       if (ext === 'ts') ext = 'js';
@@ -48,4 +53,3 @@ if (process.argv[1] === new URL(import.meta.url).pathname) {
   ));
 }
 //*/
-
