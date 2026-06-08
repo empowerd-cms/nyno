@@ -116,8 +116,12 @@ export async function runYamlString(text,customContext=null) {
       } else {
           // Normal TCP runner step
           const language = languageKeyValue[step];
+          const runnerOptions = {};
+          if (language === 'deno') {
+            runnerOptions.deno = flattenedObj.deno?.[item.id] ?? {};
+          }
           console.log('[DEBUG] dynamicFunctions',JSON.stringify({step,args,context}));
-          const resultCode = await runFunctionSingle(language, step, args,context);
+          const resultCode = await runFunctionSingle(language, step, args,context,runnerOptions);
           return resultCode;
       }
     }
