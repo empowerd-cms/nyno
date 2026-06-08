@@ -70,7 +70,7 @@ Quick comparison with n8n (currently most popular AI Workflow GUI builder):
 ### 🧠 Create New Workflow Steps in  languages you love.
 ### 🔗 Connect everything with plain YAML text (.nyno).
 
-Nyno is an **open-source multi-language workflow engine** and [language](https://github.com/empowerd-cms/nyno-lang) that lets you build, extend, and connect automation in the languages you already know — **Python, PHP, JavaScript, and Ruby**.
+Nyno is an **open-source multi-language workflow engine** and [language](https://github.com/empowerd-cms/nyno-lang) that lets you build, extend, and connect automation in the languages you already know — **Python, PHP, JavaScript, Deno, and Ruby**.
 
 
 Each programming language runs in its own **high-performance worker engine**. Command-steps can be called in short human-readable **YAML Workflows** (.nyno files).
@@ -91,16 +91,16 @@ workflow:
 To achieve most requests/per second we're using multi-process worker engines where feasible. Nyno will spawns 2 light-weight workers for each language in `dev` mode or 3 workers for every language and CPU core in `prod` mode. This means that if you have 4 CPU cores, it will spawn 12 ready-to-run workers to run workflow steps.
 
 
-| Python3 (multi-process workers engine) | PHP8 + Swoole (multi-process workers engine) | JavaScript + NodeJS (multi-process workers engine) |  Ruby (multi-process workers engine) |   
-|----------|----------|----------|----------|
-| ![Python3](/h/897a882a192b22b587a9d2373171205d8013e7a959134c2131dbd8e7f588e694/python-neon-nyno-2.webp) | ![PHP8 + Swoole](/h/591111cbf8d92909f37ef0b6587bfe9b9c1da12ae5c8c73719e21b27280be18d/php-neon-nyno-3.webp)  | ![JavaScript + NodeJS ](/h/a87196be5391957f9221e082189852d9bd909b6dfd9a1c8e78c5dc40db1018d8/js-neon-nyno-3.webp) | ![Ruby Lang](/h/5c4085f2135ff5ff1e1cb3b5042bcac1d2e0673009d4cdd0e602d8c1b004506a/ruby-lang-and-nyny.webp) | 
+| Python3 (multi-process workers engine) | PHP8 + Swoole (multi-process workers engine) | JavaScript + NodeJS (multi-process workers engine) | Deno (permission-scoped TypeScript runner) |  Ruby (multi-process workers engine) |   
+|----------|----------|----------|----------|----------|
+| ![Python3](/h/897a882a192b22b587a9d2373171205d8013e7a959134c2131dbd8e7f588e694/python-neon-nyno-2.webp) | ![PHP8 + Swoole](/h/591111cbf8d92909f37ef0b6587bfe9b9c1da12ae5c8c73719e21b27280be18d/php-neon-nyno-3.webp)  | ![JavaScript + NodeJS ](/h/a87196be5391957f9221e082189852d9bd909b6dfd9a1c8e78c5dc40db1018d8/js-neon-nyno-3.webp) | `command.deno.ts` with explicit `deno.permissions` | ![Ruby Lang](/h/5c4085f2135ff5ff1e1cb3b5042bcac1d2e0673009d4cdd0e602d8c1b004506a/ruby-lang-and-nyny.webp) | 
 
 
 ---
 
 ## Create New Steps or Use Extensions: Turn Scripts into High-Performing Text Commands
 
-In Nyno, every **Python, JavaScript, PHP and Ruby** script becomes a reusable command that runs in its own high-performing worker engine.
+In Nyno, every **Python, JavaScript, Deno, PHP and Ruby** script becomes a reusable command that runs in its own high-performing worker engine.
 Just export a function (with args and context) and call it in any workflow using plain YAML text.
 
 Example (JavaScript)
@@ -118,6 +118,28 @@ Example in Workflow (YAML):
 - step: hello
   args: 
   - "${name}"
+```
+
+Example (Deno)
+```ts
+// extensions/hello-deno/command.deno.ts
+export async function hello_deno(args: unknown[], context: Record<string, unknown>) {
+  context.custom_deno_var = args[0] ?? "deno";
+  return 0;
+}
+```
+
+Example Deno permissions in Workflow (YAML):
+```yaml
+- step: hello-deno
+  args: [John]
+  deno:
+    permissions:
+      read: ["./input"]
+      write: ["./output"]
+      net: ["api.example.com:443"]
+      env: ["API_KEY"]
+      import: ["jsr.io", "deno.land"]
 ```
 
 <p align="center">

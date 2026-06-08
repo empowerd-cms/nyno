@@ -30,6 +30,15 @@ RUN curl -fsSL https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
 # --- Verify Node and npm ---
 RUN node -v && npm -v
 
+# --- Install Deno ---
+ENV DENO_VERSION=2.8.1
+RUN curl -fsSL https://github.com/denoland/deno/releases/download/v${DENO_VERSION}/deno-x86_64-unknown-linux-gnu.zip \
+    -o /tmp/deno.zip && \
+    unzip /tmp/deno.zip -d /usr/local/bin && \
+    chmod +x /usr/local/bin/deno && \
+    rm /tmp/deno.zip && \
+    deno --version
+
 # --- Copy Swoole ---
 COPY container/bin/swoole.so /usr/lib/php/20230831/swoole.so
 
@@ -79,7 +88,7 @@ RUN uv sync --project /nyno || echo "[WARN] uv sync may fail if requirements mis
 
 
 # --- Expose ports ---
-EXPOSE 9024 9057 9003 9006 9072
+EXPOSE 9024 9057 9003 9006 9072 9073
 
 # --- Entrypoint ---
 COPY container/entrypoint.sh /entrypoint.sh
