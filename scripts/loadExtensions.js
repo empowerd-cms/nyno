@@ -3,50 +3,16 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import App from '../src/App.js';
 import { dbDelta } from '../sdk/model/dbDelta.js';
+import { loadNynoEnv } from '../src/lib-manual/env.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 /* ===========================================================
-   Env loader (shared semantics)
-=========================================================== */
-
-function load_nyno_ports(envPath = 'envs/ports.env') {
-  const env = {};
-  if (!fs.existsSync(envPath)) return env;
-
-  const lines = fs.readFileSync(envPath, 'utf-8').split('\n');
-
-  for (let line of lines) {
-    line = line.trim();
-    if (!line || line.startsWith('#')) continue;
-    if (line.includes('#')) line = line.split('#', 1)[0].trim();
-    if (!line.includes('=')) continue;
-
-    let [key, value] = line.split('=', 2);
-    key = key.trim();
-    value = value.trim();
-
-    if (
-      (value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1);
-    }
-
-    if (!isNaN(value) && value !== '') value = Number(value);
-    env[key] = value;
-  }
-
-  return env;
-}
-
-/* ===========================================================
    Load whitelist from env
 =========================================================== */
 
-const portsFile = path.resolve(__dirname, '../envs/ports.env');
-const ports = load_nyno_ports(portsFile);
+const ports = loadNynoEnv();
 
 const EXTENSION_NAME_WHITELIST = ports.EXTENSION_NAME_WHITELIST
   ? ports.EXTENSION_NAME_WHITELIST

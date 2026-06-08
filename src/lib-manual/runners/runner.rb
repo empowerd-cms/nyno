@@ -4,11 +4,32 @@ require "socket"
 require "etc"
 
 ############################################################
-# Load ports.env
+# Load Nyno env
 ############################################################
 
-def load_nyno_ports(path = "envs/ports.env")
+REQUIRED_RUNTIME_ENV_KEYS = ["WF", "GU", "PY", "JS", "DN", "PE", "RB", "HOST", "SECRET"]
+RESERVED_SECRETS = ["change_me", "changeme"]
+
+def resolve_nyno_env_path
+  path = File.expand_path(".env", Dir.pwd)
+  abort "ERROR: Missing .env. Copy .env.template to .env and set a fresh SECRET." unless File.exist?(path)
+  path
+end
+
+def validate_nyno_runtime_env(env)
+  REQUIRED_RUNTIME_ENV_KEYS.each do |key|
+    abort "ERROR: Missing required env var: #{key}" if env[key].nil? || env[key].to_s.strip.empty?
+  end
+
+  if RESERVED_SECRETS.include?(env["SECRET"].to_s.strip.downcase)
+    abort "ERROR: SECRET must be a fresh high-entropy value, not a placeholder."
+  end
+end
+
+def load_nyno_ports(path = nil)
   env = {}
+  path ||= resolve_nyno_env_path
+  abort "ERROR: Missing .env. Copy .env.template to .env and set a fresh SECRET." unless File.exist?(path)
   File.readlines(path).each do |line|
     line = line.strip
     next if line.empty? || line.start_with?("#")
@@ -32,13 +53,14 @@ def load_nyno_ports(path = "envs/ports.env")
       env[key] = value
     end
   end
+  validate_nyno_runtime_env(env)
   env
 end
 
-ports = load_nyno_ports(File.expand_path("../../../envs/ports.env", __dir__))
+ports = load_nyno_ports
 HOST = ports["HOST"] || "localhost"
 PORT = ports["RB"] || 9045
-VALID_API_KEY = ports["SECRET"] || "changeme"
+VALID_API_KEY = ports["SECRET"] || ""
 
 
 ############################################################

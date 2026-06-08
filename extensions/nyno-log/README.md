@@ -96,7 +96,7 @@ Quick test using `tcpman`:
 
 ```bash
 time tcpman localhost:6001/test_nyno_log \
-  'c{"apiKey":"changeme"}' \
+  'c{"apiKey":"test_secret_do_not_use"}' \
   'q{"JSON":{"test":"log 1"}}' \
   'q{"JSON":{"test":"log 2"}}' \
   'q{"JSON":{"test":"log 3"}}'

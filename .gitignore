@@ -1,4 +1,5 @@
 .ascend
+.env
 plugin_sdk/target
 __pycache__/
 *.py[cod]
@@ -28,8 +29,6 @@ workflows-enabled/*
 !workflows-enabled/test_nyno.nyno 
 !workflows-enabled/test_nyno_runners.nyno
 
-# Envs exceptions
-!envs/ports.env
 
 # ignore container created db
 pgdata

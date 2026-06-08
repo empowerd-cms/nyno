@@ -4,9 +4,7 @@ import time
 import json
 from queue import Queue
 
-HOST = 'localhost'
-PORT = 6001
-API_KEY = "changeme"
+from benchmark_env import API_KEY, HOST, PORT
 TEST_JSON = {"test": "log 1"}
 NUM_THREADS = 10
 DURATION = 1

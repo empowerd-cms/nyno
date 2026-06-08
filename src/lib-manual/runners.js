@@ -2,6 +2,7 @@ import net from "net";
 import { spawn } from "child_process";
 import path from "path";
 import fs from "fs";
+import { loadNynoEnv } from "./env.js";
 import { fileURLToPath } from "url";
 import crypto from "crypto";
 const __filename = fileURLToPath(import.meta.url);
@@ -10,37 +11,7 @@ const __dirname = path.dirname(__filename);
 
 import "./watchers.js";
 
-// Load main Nyno ports/config
-
-function load_nyno_ports(path = "envs/ports.env") {
-  const env = {};
-  const lines = fs.readFileSync(path, "utf-8").split("\n");
-
-  for (let line of lines) {
-    line = line.trim();
-    if (!line || line.startsWith("#")) continue;
-    if (line.includes("#")) line = line.split("#")[0].trim();
-    if (line.includes("=")) {
-      let [key, value] = line.split("=", 2);
-      key = key.trim();
-      value = value.trim();
-
-      // Remove quotes
-      if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-        value = value.slice(1, -1);
-      }
-
-      // Convert numeric values
-      if (!isNaN(value) && value !== "") value = Number(value);
-
-      env[key] = value;
-    }
-  }
-  return env;
-}
-
-const portsFile = path.resolve(__dirname, '../../envs/ports.env');
-const ports = load_nyno_ports(portsFile);
+const ports = loadNynoEnv({ requireRuntime: true });
 //console.log('[MAIN RUNNER PORTS]',ports);
 
 
@@ -130,7 +101,7 @@ const RUNNERS = {
 
 const RUNNERS_DISABLED = {};
 
-const API_KEY = ports['SECRET'] ?? 'changeme';
+const API_KEY = ports['SECRET'] ?? '';
 const connections = {};
 const pending = {};
 

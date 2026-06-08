@@ -9,11 +9,35 @@ import importlib.util
 import glob
 from datetime import datetime
 import codecs
+import sys
 decoder = codecs.getincrementaldecoder('utf-8')()
 
 # Load Nyno Ports/main config
-def load_nyno_ports(path="envs/ports.env"):
+REQUIRED_RUNTIME_ENV_KEYS = ["WF", "GU", "PY", "JS", "DN", "PE", "RB", "HOST", "SECRET"]
+RESERVED_SECRETS = {"change_me", "changeme"}
+
+def fail_nyno_env(message):
+    print(f"ERROR: {message}", file=sys.stderr)
+    sys.exit(1)
+
+def resolve_nyno_env_path():
+    path = os.path.abspath(".env")
+    if not os.path.exists(path):
+        fail_nyno_env("Missing .env. Copy .env.template to .env and set a fresh SECRET.")
+    return path
+
+def validate_nyno_runtime_env(env):
+    for key in REQUIRED_RUNTIME_ENV_KEYS:
+        if key not in env or str(env[key]).strip() == "":
+            fail_nyno_env(f"Missing required env var: {key}")
+    if str(env["SECRET"]).strip().lower() in RESERVED_SECRETS:
+        fail_nyno_env("SECRET must be a fresh high-entropy value, not a placeholder.")
+
+def load_nyno_ports(path=None):
     env = {}
+    path = path or resolve_nyno_env_path()
+    if not os.path.exists(path):
+        fail_nyno_env("Missing .env. Copy .env.template to .env and set a fresh SECRET.")
     with open(path) as f:
         for line in f:
             line = line.strip()
@@ -35,6 +59,7 @@ def load_nyno_ports(path="envs/ports.env"):
                     value = int(value)
 
                 env[key] = value
+    validate_nyno_runtime_env(env)
     return env
 
 # Example usage
@@ -49,7 +74,7 @@ NUM_WORKERS=2
 if is_prod:
     NUM_WORKERS = (os.cpu_count() or 1) * 3
 
-VALID_API_KEY = ports.get('SECRET','changeme')
+VALID_API_KEY = ports.get('SECRET', '')
 
 # ===========================================================
 #  Base State (built-in functions)

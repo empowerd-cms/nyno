@@ -96,7 +96,7 @@ const waitForFileUpload = async (timeoutMs = 30000, intervalMs = 500) => {
 };
 
   const [token, setToken] = useState(() => {
-    const defaultPw = 'change_me';
+    const defaultPw = '';
     try {
       return localStorage.getItem("rnh_token") || defaultPw;
     } catch (e) {

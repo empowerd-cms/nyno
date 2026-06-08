@@ -6,40 +6,16 @@ import path from "path";
 import { spawn } from "child_process";
 import { fileURLToPath } from "url";
 import { normalizeDenoPermissions } from "./deno_permissions.js";
+import { loadNynoEnv } from "../env.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-function load_nyno_ports(pathname = "envs/ports.env") {
-  const env: any = {};
-  const lines = fs.readFileSync(pathname, "utf-8").split("\n");
-
-  for (let line of lines) {
-    line = line.trim();
-    if (!line || line.startsWith("#")) continue;
-    if (line.includes("#")) line = line.split("#")[0].trim();
-    if (line.includes("=")) {
-      let [key, value1] = line.split("=", 2);
-      key = key.trim();
-      let value: any = value1.trim();
-
-      if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-        value = value.slice(1, -1);
-      }
-
-      if (!isNaN(value) && value !== "") value = Number(value);
-      env[key] = value;
-    }
-  }
-  return env;
-}
-
 const repoRoot = process.cwd();
-const portsFile = path.join(repoRoot, "envs/ports.env");
-const ports = load_nyno_ports(portsFile);
+const ports = loadNynoEnv({ requireRuntime: true });
 const host = ports["HOST"] ?? ports["host"] ?? "localhost";
 const PORT = ports["DN"] ?? 9073;
-const VALID_API_KEY = ports["SECRET"] ?? "changeme";
+const VALID_API_KEY = ports["SECRET"] ?? "";
 const CHILD_FILE = path.resolve(__dirname, "runner_deno_child.js");
 
 const allowDangerous = process.env.NYNO_DENO_ALLOW_DANGEROUS_PERMISSIONS === "1";

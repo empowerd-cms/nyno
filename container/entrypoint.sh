@@ -1,15 +1,7 @@
 #!/bin/bash
 set -e
 
-# Load base env
-if [[ -f /nyno/envs/ports.env ]]; then
-  source /nyno/envs/ports.env
-fi
-
-# Optional overrides
-if [[ -f /nyno/envs/ports.local.env ]]; then
-  source /nyno/envs/ports.local.env
-fi
+source /nyno/scripts/load-env.sh
 
 echo "WF:$WF"
 echo "GU:$GU"

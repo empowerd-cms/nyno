@@ -6,3 +6,4 @@ output
 workflows-available
 envs/.nyno_log_db.env
 dist-ts
+.env
