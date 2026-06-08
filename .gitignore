@@ -1,5 +1,6 @@
 .ascend
 .env
+.nyno/
 plugin_sdk/target
 __pycache__/
 *.py[cod]
@@ -19,7 +20,6 @@ private-extensions
 uv.lock
 extensions-untested
 
-envs/*
 workflows-enabled/*
 
 

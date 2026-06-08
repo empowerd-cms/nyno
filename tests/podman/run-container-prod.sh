@@ -8,6 +8,9 @@ fi
 CONTAINER_TOOL=$1
 IMAGE_NAME="nyno:latest"
 
+mkdir -p .nyno/runtime
+mkdir -p output
+
 source scripts/load-env.sh
 
 echo "WF:$WF"
@@ -24,7 +27,7 @@ fi
 $CONTAINER_TOOL run -it \
 -e APP_ENV=prod \
 -v $(pwd)/workflows-enabled:/nyno/workflows-enabled \
--v $(pwd)/envs:/nyno/envs \
+-v $(pwd)/.nyno:/nyno/.nyno \
 -v $(pwd)/output:/nyno/output \
 -v $(pwd)/extensions:/nyno/extensions \
 ${ENV_MOUNT_ARGS[@]} \

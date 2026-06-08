@@ -9,10 +9,10 @@ fi
 CONTAINER_TOOL=$1
 IMAGE_NAME="nyno:latest"
 
-mkdir -p envs
+mkdir -p .nyno/runtime
 mkdir -p output
 
-rm envs/.nyno_log_db.env -f
+rm .nyno/runtime/nyno-log-db.env -f
 
 source scripts/load-env.sh
 
@@ -33,7 +33,7 @@ fi
 # --- Run the container ---
 $CONTAINER_TOOL run -it \
 -v $(pwd)/workflows-enabled:/nyno/workflows-enabled \
--v $(pwd)/envs:/nyno/envs \
+-v $(pwd)/.nyno:/nyno/.nyno \
 -v $(pwd)/output:/nyno/output \
 -v $(pwd)/extensions:/nyno/extensions \
 ${ENV_MOUNT_ARGS[@]} \

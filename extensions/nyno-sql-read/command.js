@@ -7,7 +7,7 @@ import App from '../../src/App.js'; // import your singleton
 // ------------------- Postgres setup -------------------
 let pgClient = App.get('db_nyno_log');
 if (!pgClient) {
-    const envFilePath = path.resolve('./envs/.nyno_log_db.env');
+    const envFilePath = path.resolve('./.nyno/runtime/nyno-log-db.env');
     const {
         NYNO_DB_NAME: dbName,
         NYNO_DB_USER: dbUser,

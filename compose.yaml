@@ -1,0 +1,25 @@
+services:
+  nyno:
+    build:
+      context: .
+    image: nyno:local
+    env_file:
+      - .env
+    environment:
+      APP_ENV: prod
+      # Keep .env HOST=127.0.0.1 for normal host/nginx deployments.
+      # Containers need to bind inside the container namespace; host ports stay loopback-only below.
+      NYNO_BIND_HOST: 0.0.0.0
+    volumes:
+      - ./.env:/nyno/.env:ro
+      - ./workflows-enabled:/nyno/workflows-enabled
+      - ./extensions:/nyno/extensions
+      - ./output:/nyno/output
+      - ./.nyno:/nyno/.nyno
+      - nyno-pgdata:/nyno/pgdata
+    ports:
+      - "127.0.0.1:${GU:-9057}:${GU:-9057}"
+    restart: unless-stopped
+
+volumes:
+  nyno-pgdata:

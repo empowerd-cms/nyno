@@ -7,7 +7,7 @@ import App from '../../src/App.js'; // import the singleton
 // Setup Postgres client
 let pgClient = App.get('db_nyno_log');
 if (!pgClient) {
-    const envFilePath = path.resolve('./envs/.nyno_log_db.env'); // from setup.sh
+    const envFilePath = path.resolve('./.nyno/runtime/nyno-log-db.env'); // from setup.sh
     const {
         NYNO_DB_NAME: dbName,
         NYNO_DB_USER: dbUser,

@@ -31,3 +31,7 @@ case "$SECRET" in
     fail_nyno_env "SECRET must be a fresh high-entropy value, not '$SECRET'."
     ;;
 esac
+
+if [ -n "${NYNO_BIND_HOST:-}" ]; then
+  HOST="$NYNO_BIND_HOST"
+fi

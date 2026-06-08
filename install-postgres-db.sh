@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-ENV_FILE="envs/.nyno_log_db.env"
+ENV_FILE=".nyno/runtime/nyno-log-db.env"
 
 PG_SUPERUSER="postgres"
+mkdir -p "$(dirname "$ENV_FILE")"
 
 # Create NYNO_DB if file not exists
 if [ ! -f "$ENV_FILE" ]; then
@@ -104,7 +105,8 @@ if [ -f "$ENV_FILE" ]; then
 	# nothing
 	echo 'OK'
 else
-ENV_FILE=`realpath ./envs/.nyno_log_db.env`
+mkdir -p "$(dirname "$ENV_FILE")"
+ENV_FILE=`realpath ./.nyno/runtime/nyno-log-db.env`
 cat > "$ENV_FILE" <<EOF
 NYNO_DB_NAME=$NYNO_DB_NAME
 NYNO_DB_USER=$NYNO_DB_USER

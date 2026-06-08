@@ -13,7 +13,6 @@ const __dirname = path.dirname(__filename);
 
 for (const dir of [
   './extensions',
-  './envs',
   './output',
   './workflows-enabled',
   './workflows-available',
