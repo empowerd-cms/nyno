@@ -5,6 +5,7 @@ import App from '../src/App.js'; // import the singleton
 import { save } from './model/dbDelta.js';
 import { NynoClient } from '../drivers/nynoclient.js';
 import path from 'path';
+import { loadNynoEnv } from '../src/lib-manual/env.js';
 
 
 let nynoClient;
@@ -15,9 +16,9 @@ let nynoClient;
 export async function runWorkflowFn(pathWf,data={}){
 	if(!nynoClient){
 		// todo load envs
-		const envVars = App.loadEnvVars('envs/ports.env');
+		const envVars = loadNynoEnv({ requireRuntime: true });
 		console.log({envVars});
-		nynoClient = await NynoClient.create(envVars.SECRET ?? 'change_me');
+		nynoClient = await NynoClient.create(envVars.SECRET ?? '');
 		
 		
 // Load workflows
@@ -38,9 +39,9 @@ export async function runWorkflowFn(pathWf,data={}){
 export async function runWorkflow(pathWf,data={}){
 	if(!nynoClient){
 		// todo load envs
-		const envVars = App.loadEnvVars('envs/ports.env');
+		const envVars = loadNynoEnv({ requireRuntime: true });
 		console.log({envVars});
-		nynoClient = await NynoClient.create(envVars.SECRET ?? 'change_me');
+		nynoClient = await NynoClient.create(envVars.SECRET ?? '');
 		
 		
 // Load workflows

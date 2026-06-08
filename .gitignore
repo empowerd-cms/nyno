@@ -1,5 +1,9 @@
 .ascend
+.env
+.nyno/
 plugin_sdk/target
+__pycache__/
+*.py[cod]
 build
 guest-uploads
 node_modules
@@ -16,7 +20,6 @@ private-extensions
 uv.lock
 extensions-untested
 
-envs/*
 workflows-enabled/*
 
 
@@ -26,8 +29,6 @@ workflows-enabled/*
 !workflows-enabled/test_nyno.nyno 
 !workflows-enabled/test_nyno_runners.nyno
 
-# Envs exceptions
-!envs/ports.env
 
 # ignore container created db
 pgdata

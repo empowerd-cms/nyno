@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-ENV_FILE="envs/.nyno_log_db.env"
+ENV_FILE=".nyno/runtime/nyno-log-db.env"
 
 if [ -f "$ENV_FILE" ]; then
   echo "$ENV_FILE already exists. Remove this file to install new db"
@@ -17,6 +17,7 @@ DB_NAME="nyno_log_db_$TIMESTAMP"
 DB_USER="nyno_log_user_$TIMESTAMP"
 DB_PASS=$(openssl rand -hex 32)
 PG_SUPERUSER="postgres"
+mkdir -p "$(dirname "$ENV_FILE")"
 
 echo "=== Setting up Nyno Log Database ==="
 echo "Database: $DB_NAME"
@@ -76,7 +77,8 @@ END;
 EOSQL
 
 # === ENV FILE ===
-ENV_FILE=`realpath ./envs/.nyno_log_db.env`
+mkdir -p "$(dirname "$ENV_FILE")"
+ENV_FILE=`realpath ./.nyno/runtime/nyno-log-db.env`
 cat > "$ENV_FILE" <<EOF
 NYNO_DB_NAME=$DB_NAME
 NYNO_DB_USER=$DB_USER

@@ -1,10 +1,5 @@
 #!/bin/bash
-source envs/ports.env
-
-# Possibly override with custom .local.env
-if [ -f envs/ports.local.env ]; then
-  source envs/ports.local.env
-fi
+source scripts/load-env.sh
 
 
 source .venv/bin/activate

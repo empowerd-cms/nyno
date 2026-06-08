@@ -1,15 +1,7 @@
 #!/bin/bash
 set -e
 
-# Load base env
-if [[ -f /nyno/envs/ports.env ]]; then
-  source /nyno/envs/ports.env
-fi
-
-# Optional overrides
-if [[ -f /nyno/envs/ports.local.env ]]; then
-  source /nyno/envs/ports.local.env
-fi
+source /nyno/scripts/load-env.sh
 
 echo "WF:$WF"
 echo "GU:$GU"
@@ -17,7 +9,7 @@ echo "RB:$RB"
 
 ### 
 
-mkdir -p envs
+mkdir -p .nyno/runtime
 mkdir -p output
 
 
@@ -60,7 +52,7 @@ done
 echo "[DEBUG] Postgres is ready!"
 
 # -- Create Postgres Databaes for nyno-logs extension
-mkdir envs -p
+mkdir -p .nyno/runtime
 
 # Check if .venv directory exists
 if [ -d ".venv" ]; then
@@ -75,7 +67,7 @@ if [ -d ".venv" ]; then
 fi
 
 # Create New DB
-rm envs/.nyno_log_db.env -f
+rm .nyno/runtime/nyno-log-db.env -f
 sudo bash ./install-postgres-db.sh
 
 

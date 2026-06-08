@@ -3,3 +3,6 @@ uv pip tree
 
 echo "=== JAVASCRIPT DEPS ==="
 npm ls --all --json
+
+echo "=== DENO ==="
+deno --version

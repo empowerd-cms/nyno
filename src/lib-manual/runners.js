@@ -2,6 +2,7 @@ import net from "net";
 import { spawn } from "child_process";
 import path from "path";
 import fs from "fs";
+import { loadNynoEnv } from "./env.js";
 import { fileURLToPath } from "url";
 import crypto from "crypto";
 const __filename = fileURLToPath(import.meta.url);
@@ -10,41 +11,11 @@ const __dirname = path.dirname(__filename);
 
 import "./watchers.js";
 
-// Load main Nyno ports/config
-
-function load_nyno_ports(path = "envs/ports.env") {
-  const env = {};
-  const lines = fs.readFileSync(path, "utf-8").split("\n");
-
-  for (let line of lines) {
-    line = line.trim();
-    if (!line || line.startsWith("#")) continue;
-    if (line.includes("#")) line = line.split("#")[0].trim();
-    if (line.includes("=")) {
-      let [key, value] = line.split("=", 2);
-      key = key.trim();
-      value = value.trim();
-
-      // Remove quotes
-      if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-        value = value.slice(1, -1);
-      }
-
-      // Convert numeric values
-      if (!isNaN(value) && value !== "") value = Number(value);
-
-      env[key] = value;
-    }
-  }
-  return env;
-}
-
-const portsFile = path.resolve(__dirname, '../../envs/ports.env');
-const ports = load_nyno_ports(portsFile);
+const ports = loadNynoEnv({ requireRuntime: true });
 //console.log('[MAIN RUNNER PORTS]',ports);
 
 
-const host = ports['host'] ?? 'localhost';
+const host = ports['HOST'] ?? ports['host'] ?? 'localhost';
 
 // List of directories to scan for extensions
 const extensionDirs = [
@@ -104,6 +75,13 @@ const RUNNERS = {
     file: path.resolve(__dirname, "../../dist-ts/nyno/src/lib-manual/runners/runner.js"),
     checkFunction: makeCheckFunction(['command.js','command.ts','command.wasm'])
   },
+  deno: {
+    host,
+    port: ports["DN"] ?? 9073,
+    cmd: "node",
+    file: path.resolve(__dirname, "../../dist-ts/nyno/src/lib-manual/runners/runner_deno.js"),
+    checkFunction: makeCheckFunction(['command.deno.ts'])
+  },
   py: {
     host,
     port: ports['PY'] ?? 9006,
@@ -123,7 +101,7 @@ const RUNNERS = {
 
 const RUNNERS_DISABLED = {};
 
-const API_KEY = ports['SECRET'] ?? 'changeme';
+const API_KEY = ports['SECRET'] ?? '';
 const connections = {};
 const pending = {};
 
@@ -240,7 +218,7 @@ export function generateUUIDv7() {
 }
 
 // --- Run function on a single runner ---
-export function runFunctionSingle(language, functionName, args = [],context={}) {
+export function runFunctionSingle(language, functionName, args = [],context={},options={}) {
 
 console.log('runFunctionSingle',language, functionName, args,context);
 
@@ -259,7 +237,7 @@ context['__n_id'] = __n_id;
       resolve(msg);
     };
 
-    client.write('r'+JSON.stringify({functionName,args,context}) + '\n');
+    client.write('r'+JSON.stringify({functionName,args,context,options}) + '\n');
   });
 }
 

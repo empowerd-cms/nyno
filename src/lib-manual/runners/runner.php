@@ -4,11 +4,38 @@ use Swoole\Coroutine;
 
 /* ---------------- ENV LOADER ---------------- */
 
-$basedir = __DIR__ . "/../../../";
-$basedir_envs_ports = $basedir . "/envs/ports.env";
+$basedir = realpath(__DIR__ . "/../../../");
+
+function fail_nyno_env($message) {
+    fwrite(STDERR, "ERROR: " . $message . PHP_EOL);
+    exit(1);
+}
+
+function resolve_nyno_env_path($basedir) {
+    $path = $basedir . "/.env";
+    if (!file_exists($path)) {
+        fail_nyno_env("Missing .env. Copy .env.template to .env and set a fresh SECRET.");
+    }
+    return $path;
+}
+
+function validate_nyno_runtime_env($env) {
+    $required = ["WF", "GU", "PY", "JS", "DN", "PE", "RB", "HOST", "SECRET"];
+    foreach ($required as $key) {
+        if (!isset($env[$key]) || trim((string)$env[$key]) === '') {
+            fail_nyno_env("Missing required env var: " . $key);
+        }
+    }
+
+    $secret = strtolower(trim((string)$env["SECRET"]));
+    if ($secret === "change_me" || $secret === "changeme") {
+        fail_nyno_env("SECRET must be a fresh high-entropy value, not a placeholder.");
+    }
+}
 
 function load_nyno_ports($path) {
     $env = [];
+    if (!file_exists($path)) fail_nyno_env("Missing .env. Copy .env.template to .env and set a fresh SECRET.");
     foreach (file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
         $line = trim($line);
         if ($line === '' || str_starts_with($line, '#')) continue;
@@ -20,14 +47,15 @@ function load_nyno_ports($path) {
             $env[$k] = trim($v, "\"'");
         }
     }
+    validate_nyno_runtime_env($env);
     return $env;
 }
 
-$ports = load_nyno_ports($basedir_envs_ports);
+$ports = load_nyno_ports(resolve_nyno_env_path($basedir));
 
-$host        = $ports['HOST']   ?? '0.0.0.0';
+$host        = $ports['HOST']   ?? '127.0.0.1';
 $pe_port    = $ports['PE']     ?? 9003;
-$VALID_API_KEY = $ports['SECRET'] ?? 'changeme';
+$VALID_API_KEY = $ports['SECRET'] ?? '';
 
 $isProd = getenv('NODE_ENV') === 'production';
 $num_workers = $isProd ? (int)shell_exec('nproc') * 3 : 2;

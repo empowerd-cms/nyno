@@ -94,10 +94,10 @@ fi
 ### --- Check for Postgres ENV file --- ###
 echo -e "${BLUE}Checking database environment file...${RESET}"
 
-if [[ -f "envs/.nyno_log_db.env" ]]; then
-    echo -e "${GREEN}[OK]${RESET} envs/.nyno_log_db.env exists"
+if [[ -f ".nyno/runtime/nyno-log-db.env" ]]; then
+    echo -e "${GREEN}[OK]${RESET} .nyno/runtime/nyno-log-db.env exists"
 else
-    echo -e "${RED}[ERR]${RESET} Missing envs/.nyno_log_db.env"
+    echo -e "${RED}[ERR]${RESET} Missing .nyno/runtime/nyno-log-db.env"
     echo -e "      ${YELLOW}Run: bash install-postgres-db.sh${RESET}"
     db_env_missing=true
     error_count=$((error_count + 1))

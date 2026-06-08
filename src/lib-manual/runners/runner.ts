@@ -8,51 +8,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 import { loadWasm, runWasm } from '../runWasm.js';
-
-
-
-// Load Nyno Main Ports/config
-
-function load_nyno_ports(path = "envs/ports.env") {
-  const env: any = {};
-  const lines = fs.readFileSync(path, "utf-8").split("\n");
-
-  for (let line of lines) {
-    line = line.trim();
-    if (!line || line.startsWith("#")) continue;
-    if (line.includes("#")) line = line.split("#")[0].trim();
-    if (line.includes("=")) {
-      let [key, value1] = line.split("=", 2);
-      key = key.trim();
-      let value: any = value1.trim();   // <- force any here
-
-      // Remove quotes
-      if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
-        value = value.slice(1, -1);
-      }
-
-      // Convert numeric values
-      if (!isNaN(value) && value !== "") value = Number(value);
-
-      env[key] = value;
-    }
-  }
-  return env;
-}
-
-
+import { loadNynoEnv } from "../env.js";
 
 const repoRoot = process.cwd(); 
-const portsFile = path.join(repoRoot, "envs/ports.env"); 
-
-//const portsFile = path.resolve(__dirname, "../../../envs/ports.env");
-const ports = load_nyno_ports(portsFile);
+const ports = loadNynoEnv({ requireRuntime: true });
 //console.log(ports);
 
 const host = ports['HOST'] ?? 'localhost';
 
 const PORT = ports['JS'] ?? 4001;
-const VALID_API_KEY = ports['SECRET'] ?? "changeme";
+const VALID_API_KEY = ports['SECRET'] ?? "";
 
 
 globalThis.state = {

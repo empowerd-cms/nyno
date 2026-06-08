@@ -9,17 +9,12 @@ fi
 CONTAINER_TOOL=$1
 IMAGE_NAME="flowagi/nyno"
 
-mkdir -p envs
+mkdir -p .nyno/runtime
 mkdir -p output
 
-rm envs/.nyno_log_db.env -f
+rm .nyno/runtime/nyno-log-db.env -f
 
-source "$(pwd)/envs/ports.env"
-
-# Possibly override with custom .local.env
-if [ -f envs/ports.local.env ]; then
-  source envs/ports.local.env
-fi
+source scripts/load-env.sh
 
 echo "Workflow Port:$WF"
 echo "GUI Port:$GU"
@@ -29,13 +24,19 @@ echo "JS:$JS"
 echo "PHP:$PE"
 echo "RB:$RB"
 
+ENV_MOUNT_ARGS=()
+if [ -f .env ]; then
+  ENV_MOUNT_ARGS=(-v "$(pwd)/.env:/nyno/.env:ro")
+fi
+
 
 # --- Run the container ---
 $CONTAINER_TOOL run -it \
 -v $(pwd)/workflows-enabled:/nyno/workflows-enabled \
--v $(pwd)/envs:/nyno/envs \
+-v $(pwd)/.nyno:/nyno/.nyno \
 -v $(pwd)/output:/nyno/output \
 -v $(pwd)/extensions:/nyno/extensions \
+${ENV_MOUNT_ARGS[@]} \
 -p "$PY:$PY" -p "$JS:$JS" -p "$PE:$PE" \
 -p "$RB:$RB" \
 -p "$WF:$WF" -p "$GU:$GU" $IMAGE_NAME bash
