@@ -1,6 +1,8 @@
 .ascend
 pgdata
 plugin_sdk/target
+__pycache__/
+*.py[cod]
 build
 guest-uploads
 node_modules
